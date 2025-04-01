@@ -1,0 +1,29 @@
+{
+    "Buffer Overflow": {
+        "description": "A buffer overflow occurs when a program writes more data to a buffer than it can hold.",
+        "recommendations": [
+            "Use functions like strncpy() instead of strcpy() to prevent overflows.",
+            "Enable compiler protections like Stack Canaries and Address Sanitizer (ASAN).",
+            "Perform bounds checking on all inputs.",
+            "Adopt secure coding practices and use memory-safe languages like Rust."
+        ]
+    },
+    "Trapdoor": {
+        "description": "A trapdoor is a hidden mechanism that bypasses normal authentication or security checks.",
+        "recommendations": [
+            "Regularly audit system logs for suspicious commands or unauthorized privilege escalations.",
+            "Restrict access to critical system files and enforce the principle of least privilege.",
+            "Use intrusion detection systems (IDS) to monitor unusual behavior.",
+            "Update and patch software regularly to close known backdoors."
+        ]
+    },
+    "Cache Poisoning": {
+        "description": "Cache poisoning manipulates cache data (e.g., ARP or DNS) to redirect traffic or disrupt communications.",
+        "recommendations": [
+            "Enable ARP inspection and filtering on network devices.",
+            "Use secure DNS protocols such as DNSSEC.",
+            "Regularly clear and validate cache entries.",
+            "Monitor network traffic for duplicate IPs or unsolicited ARP replies."
+        ]
+    }
+}
