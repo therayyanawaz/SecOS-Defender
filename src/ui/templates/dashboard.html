@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecOS Defender</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>SecOS Defender</h1>
+        <p class="last-updated">Last Updated: <span id="timestamp"></span></p>
+    </header>
+    
+    <div class="container">
+        <section class="alert-summary">
+            <h2>Security Summary</h2>
+            <div class="severity-chart">
+                <div class="severity critical">Critical: {{ critical_count }}</div>
+                <div class="severity high">High: {{ high_count }}</div>
+                <div class="severity medium">Medium: {{ medium_count }}</div>
+                <div class="severity low">Low: {{ low_count }}</div>
+            </div>
+        </section>
+
+        <section class="alert-list">
+            <h2>Active Alerts</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Type</th>
+                        <th>Details</th>
+                        <th>Severity</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for alert in alerts %}
+                    <tr class="severity-{{ alert.severity.lower() }}">
+                        <td>{{ alert.id }}</td>
+                        <td>{{ alert.type }}</td>
+                        <td class="details">{{ alert.details }}</td>
+                        <td>{{ alert.severity }}</td>
+                        <td>{{ alert.timestamp }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </div>
+
+    <script>
+        // Auto-refresh every 30 seconds
+        setInterval(() => {
+            fetch('/api/alerts')
+                .then(response => response.json())
+                .then(data => window.location.reload());
+        }, 30000);
+
+        // Update timestamp
+        document.getElementById('timestamp').textContent = new Date().toLocaleString();
+    </script>
+</body>
+</html>
