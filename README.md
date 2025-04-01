@@ -1,45 +1,104 @@
-# SecOS-Defender
-A framework to detect and mitigate operating system vulnerabilities such as buffer overflows, trapdoors, and cache poisoning.
+# SecOS Defender: Security Vulnerability Detection Framework
 
-## Overview
-SecOS-Defender is a simple prototype built to simulate a buffer overflow attack, detect it using tools like Address Sanitizer (ASAN), log alerts, and display them with mitigation suggestions on a basic web interface using Flask. It’s designed for Ubuntu Linux and serves as a quick demonstration of vulnerability detection for educational purposes.
+## Project Overview
 
-## Setup
-To get SecOS-Defender running, follow these steps:
+SecOS Defender is a comprehensive framework designed to detect and mitigate security vulnerabilities in operating systems. The framework focuses on identifying common vulnerabilities such as buffer overflows, trapdoors, and cache poisoning while providing real-time alerts and actionable remediation strategies.
 
-1. **Install Dependencies**:
+This project implements a modular security framework that:
+- Simulates attacks to test system defenses
+- Detects vulnerabilities using multiple detection mechanisms
+- Provides real-time alerts through a user-friendly dashboard
+- Suggests mitigation strategies for identified vulnerabilities
+
+## Features
+
+- **Buffer Overflow Detection**: Identifies stack and heap-based buffer overflows using Address Sanitizer (ASAN) and canary-based detection
+- **Trapdoor Identification**: Monitors system for unauthorized access points and backdoors
+- **Cache Poisoning Detection**: Identifies ARP cache poisoning attempts and other cache-based attacks
+- **Real-time Alerting**: Logs and displays security alerts through a web-based dashboard
+- **Mitigation Advisor**: Provides actionable recommendations for addressing detected vulnerabilities
+
+## System Requirements
+
+- Ubuntu 20.04 LTS or newer
+- Python 3.8+
+- GCC with Address Sanitizer support
+- 4GB RAM minimum (8GB recommended)
+- 20GB free disk space
+
+## Installation
+
+1. Clone the repository:
    ```bash
-   sudo apt update
-   sudo apt install gcc libasan6 python3-pip -y
-   pip3 install flask
+   git clone https://github.com/yourusername/SecOS-Defender.git
+   cd SecOS-Defender
    ```
-2. **Compile the Vulnerable Code**:
+
+2. Install dependencies:
    ```bash
-   gcc -fsanitize=address -g vuln.c -o vuln
+   # Install system dependencies
+   sudo apt-get update
+   sudo apt-get install -y build-essential python3-dev python3-pip
+
+   # Install Python dependencies
+   pip install -r requirements.txt
    ```
-3. **Run the Framework**:
-   - Simulate attack: `./vuln > output.txt` (type "AAAAAAAAAA" when prompted).
-   - Detect and log: `python3 alert.py`.
-   - Start the web UI: `python3 app.py` (open `http://127.0.0.1:5000` in a browser).
+
+3. Compile the detection modules:
+   ```bash
+   cd src/detection
+   gcc -fsanitize=address -o buffer_detector buffer_overflow.c
+   ```
 
 ## Usage
-- **Simulate a Buffer Overflow**: Run `./vuln` and enter a string longer than 10 characters (e.g., "AAAAAAAAAA") to trigger an overflow.
-- **Detect the Issue**: Use `python3 alert.py` to check the output and log an alert to `alerts.log`.
-- **View Results**: Visit `http://127.0.0.1:5000` to see the alert (e.g., "Buffer Overflow Detected - High Severity") and a mitigation suggestion (e.g., "Update software, enable ASLR").
 
-## Files
-- `README.md`: This documentation.
-- `vuln.c`: C code with a vulnerable buffer for simulation.
-- `alert.py`: Python script to detect overflows and log alerts.
-- `app.py`: Flask app for the web interface.
-- `templates/dashboard.html`: Webpage template for displaying alerts and mitigation.
-- `mitigations.json`: Contains mitigation suggestions in JSON format.
-- `alerts.log`: Sample alert log.
-- `output.txt`: Sample output from the simulation.
+1. Start the detection service:
+   ```bash
+   python src/detection/detection_service.py
+   ```
 
-## Screenshot
+2. Launch the attack simulator (in a separate terminal):
+   ```bash
+   python src/simulation/attack_simulator.py
+   ```
 
+3. Start the web dashboard:
+   ```bash
+   python src/ui/app.py
+   ```
 
-## Notes
-- Focuses mainly on buffer overflows; trapdoors and cache poisoning are placeholders for future expansion.
-- (not a production tool)
+4. Access the dashboard at `http://localhost:5000`
+
+## Module Structure
+
+The framework consists of five primary modules:
+
+1. **Attack Simulation Engine**: Generates controlled attacks to test system defenses
+2. **Vulnerability Detection Core**: Monitors system for security vulnerabilities
+3. **Alert System**: Processes and displays security alerts
+4. **Mitigation Advisor**: Suggests remediation strategies for detected vulnerabilities
+5. **User Interface**: Provides a web-based dashboard for monitoring and management
+
+## Contributing
+
+Contributions to SecOS Defender are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- Address Sanitizer (ASAN) for memory error detection
+- Flask for the web dashboard framework
+- The MITRE ATT&CK framework for attack simulation guidance
+
+---
+
+*This project was developed as part of a security framework implementation assignment.*
