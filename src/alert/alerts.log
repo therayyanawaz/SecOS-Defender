@@ -1,0 +1,2 @@
+2025-04-02 15:45:00 - INFO - Vulnerability Detected: Buffer Overflow | Severity: High | Details: Detected in vulnerable_function() while processing user input.
+2025-04-02 15:46:00 - INFO - Vulnerability Detected: Trapdoor | Severity: Critical | Details: Unauthorized privilege escalation detected in system logs.
