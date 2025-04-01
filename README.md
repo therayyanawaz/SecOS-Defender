@@ -30,7 +30,7 @@ This project implements a modular security framework that:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/SecOS-Defender.git
+   git clone https://github.com/therayyanawaz/SecOS-Defender.git
    cd SecOS-Defender
    ```
 
