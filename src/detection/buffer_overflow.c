@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <string.h>
-#include <sanitizer/asan_interface.h>
 
 // Secure version of vulnerable_function with bounds checking
 __attribute__((noinline)) void vulnerable_function(const char *input) {
@@ -11,7 +10,7 @@ __attribute__((noinline)) void vulnerable_function(const char *input) {
     printf("Buffer content: %s\n", buffer);
 }
 
-// ASAN-friendly main function
+// Main function with ASAN compatibility
 int main(int argc, char *argv[]) {
     if (argc != 2) {
         fprintf(stderr, "Usage: %s <input>\n", argv[0]);
@@ -19,12 +18,9 @@ int main(int argc, char *argv[]) {
     }
     
     const char *input = argv[1];
-    size_t input_len = strlen(input);
     
-    // AddressSanitizer: Detect memory errors at runtime
-    void *fake_stack = __asan_allocate_fake_stack();
+    // Call the vulnerable function directly
     vulnerable_function(input);
-    __asan_deallocate_fake_stack(fake_stack);
     
     return 0;
 }
