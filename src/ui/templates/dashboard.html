@@ -10,16 +10,17 @@
     <header>
         <h1>SecOS Defender</h1>
         <p class="last-updated">Last Updated: <span id="timestamp"></span></p>
+        <div id="update-indicator" class="update-indicator hidden">New Alert Detected!</div>
     </header>
     
     <div class="container">
         <section class="alert-summary">
             <h2>Security Summary</h2>
             <div class="severity-chart">
-                <div class="severity critical">Critical: {{ critical_count }}</div>
-                <div class="severity high">High: {{ high_count }}</div>
-                <div class="severity medium">Medium: {{ medium_count }}</div>
-                <div class="severity low">Low: {{ low_count }}</div>
+                <div class="severity critical">Critical: <span id="critical-count">0</span></div>
+                <div class="severity high">High: <span id="high-count">0</span></div>
+                <div class="severity medium">Medium: <span id="medium-count">0</span></div>
+                <div class="severity low">Low: <span id="low-count">0</span></div>
             </div>
         </section>
 
@@ -35,31 +36,117 @@
                         <th>Timestamp</th>
                     </tr>
                 </thead>
-                <tbody>
-                    {% for alert in alerts %}
-                    <tr class="severity-{{ alert.severity.lower() }}">
-                        <td>{{ alert.id }}</td>
-                        <td>{{ alert.type }}</td>
-                        <td class="details">{{ alert.details }}</td>
-                        <td>{{ alert.severity }}</td>
-                        <td>{{ alert.timestamp }}</td>
-                    </tr>
-                    {% endfor %}
+                <tbody id="alerts-table-body">
+                    <!-- Alert rows will be injected here by JavaScript -->
                 </tbody>
             </table>
         </section>
     </div>
 
     <script>
-        // Auto-refresh every 30 seconds
-        setInterval(() => {
-            fetch('/api/alerts')
+        // Track alerts we've already seen to avoid duplicates
+        let processedAlerts = new Set();
+        let alertCounter = 1;
+        
+        // Function to update alerts
+        function updateAlerts() {
+            fetch('/alerts')
                 .then(response => response.json())
-                .then(data => window.location.reload());
-        }, 30000);
-
-        // Update timestamp
-        document.getElementById('timestamp').textContent = new Date().toLocaleString();
+                .then(alerts => {
+                    // Count alerts by severity
+                    let criticalCount = 0;
+                    let highCount = 0;
+                    let mediumCount = 0;
+                    let lowCount = 0;
+                    
+                    const tableBody = document.getElementById('alerts-table-body');
+                    let newAlertsFound = false;
+                    
+                    // Process each alert
+                    alerts.forEach(alert => {
+                        // Create a unique ID for this alert based on timestamp and message
+                        const alertId = `${alert.timestamp}-${alert.message}`;
+                        
+                        // Only process if we haven't seen this alert before
+                        if (!processedAlerts.has(alertId)) {
+                            processedAlerts.add(alertId);
+                            newAlertsFound = true;
+                            
+                            // Create a new row for this alert
+                            const tr = document.createElement('tr');
+                            tr.className = `severity-${alert.severity.toLowerCase()}`;
+                            
+                            // Add alert ID cell
+                            const idCell = document.createElement('td');
+                            idCell.textContent = alertCounter++;
+                            tr.appendChild(idCell);
+                            
+                            // Add type cell
+                            const typeCell = document.createElement('td');
+                            typeCell.textContent = alert.type;
+                            tr.appendChild(typeCell);
+                            
+                            // Add details cell
+                            const detailsCell = document.createElement('td');
+                            detailsCell.className = 'details';
+                            detailsCell.textContent = alert.message;
+                            tr.appendChild(detailsCell);
+                            
+                            // Add severity cell
+                            const severityCell = document.createElement('td');
+                            severityCell.textContent = alert.severity;
+                            tr.appendChild(severityCell);
+                            
+                            // Add timestamp cell
+                            const timestampCell = document.createElement('td');
+                            timestampCell.textContent = alert.timestamp;
+                            tr.appendChild(timestampCell);
+                            
+                            // Add the row to the table (at the beginning)
+                            tableBody.insertBefore(tr, tableBody.firstChild);
+                            
+                            // Flash animation for new alerts
+                            setTimeout(() => {
+                                tr.classList.add('new-alert');
+                                setTimeout(() => tr.classList.remove('new-alert'), 2000);
+                            }, 100);
+                        }
+                        
+                        // Update counts
+                        if (alert.severity === 'Critical') criticalCount++;
+                        else if (alert.severity === 'High') highCount++;
+                        else if (alert.severity === 'Medium') mediumCount++;
+                        else if (alert.severity === 'Low') lowCount++;
+                    });
+                    
+                    // Show update indicator if new alerts were found
+                    if (newAlertsFound) {
+                        const indicator = document.getElementById('update-indicator');
+                        indicator.classList.remove('hidden');
+                        
+                        // Hide the indicator after 3 seconds
+                        setTimeout(() => {
+                            indicator.classList.add('hidden');
+                        }, 3000);
+                    }
+                    
+                    // Update summary counts
+                    document.getElementById('critical-count').textContent = criticalCount;
+                    document.getElementById('high-count').textContent = highCount;
+                    document.getElementById('medium-count').textContent = mediumCount;
+                    document.getElementById('low-count').textContent = lowCount;
+                    
+                    // Update timestamp
+                    document.getElementById('timestamp').textContent = new Date().toLocaleString();
+                })
+                .catch(error => console.error('Error fetching alerts:', error));
+        }
+        
+        // Initial update
+        updateAlerts();
+        
+        // Auto-refresh every 2 seconds
+        setInterval(updateAlerts, 2000);
     </script>
 </body>
 </html>

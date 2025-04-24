@@ -1,0 +1,2 @@
+user1 ran sudo chmod 777 /etc/passwd
+user2 executed su root

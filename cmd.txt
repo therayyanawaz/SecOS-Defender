@@ -1,0 +1,3 @@
+taskkill /f /im python.exe
+start python src/detection/detection_service.py
+start python src/ui/app.py
